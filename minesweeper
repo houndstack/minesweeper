@@ -1,0 +1,255 @@
+#include <iostream>
+#include <algorithm>
+#include <stdio.h>
+#include <cstdlib>
+#include <time.h>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+char grid[8][8];
+  char top[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+int overlay[8][8] = {0};
+int flagsize = 0;
+int prevflagsize = 0;
+vector<int> flag;
+
+
+void display(){
+  cout << " ";
+  for(int i = 0; i<8;i++){
+    cout << " " << top[i]; 
+  }
+  cout << endl;
+  for(int i = 0;i<8;i++){
+    cout << i+1;
+    for(int j = 0;j<8;j++){
+      if(flagsize>prevflagsize&&flag[flagsize-1]/8==i&&flag[flagsize-1]%8==j){
+        cout << " f";
+        continue;
+      }
+      cout << " " << grid[i][j];
+    }
+    cout << endl;
+  }
+  prevflagsize = flagsize;
+}
+int main() {
+  //setup
+  int mines[8][8];
+  int random[8];
+  srand (time(NULL));
+  int c = 50;
+  for(int i = 0;i<8;i++){
+    random[i] = rand()%64 + 1;
+  }
+for(int i = 0;i<8;i++){
+  for(int j = 0;j<8;j++){
+    grid[i][j] = '-';
+  }
+}
+
+  display();
+  //mine generation
+  for(int i = 0;i<8;i++){
+    for(int j = 0;j<8;j++){
+      mines[i][j] = 0;
+    }
+  }
+  for(int i = 0;i<8;i++){
+    mines[random[i]/8][random[i]%8-1] = 1;
+  }
+  for(int i = 0;i<8;i++){
+    for(int j = 0;j<8;j++){
+      cout << mines[i][j];
+    }
+    cout << endl;
+  }
+  cout << endl;
+  //overlay setup
+  for(int i = 1;i<7;i++){
+    for(int j = 1;j<7;j++){
+      if(mines[i-1][j-1]==1){
+        overlay[i][j]++;
+      }
+      if(mines[i-1][j]==1){
+        overlay[i][j]++;
+      }
+      if(mines[i-1][j+1]==1){
+        overlay[i][j]++;
+      }
+      if(mines[i][j-1]==1){
+        overlay[i][j]++;
+      }
+      if(mines[i][j+1]==1){
+        overlay[i][j]++;
+      }
+      if(mines[i+1][j-1]==1){
+        overlay[i][j]++;
+      }
+      if(mines[i+1][j]==1){
+        overlay[i][j]++;
+      }
+      if(mines[i+1][j+1]==1){
+        overlay[i][j]++;
+      }
+    }
+  }
+
+    for(int i = 1;i<7;i++){
+      if(mines[i-1][0]==1){
+        overlay[i][0]++;
+      }
+      if(mines[i-1][1]==1){
+        overlay[i][0]++;
+      }
+      if(mines[i][1]==1){
+        overlay[i][0]++;
+      }
+      if(mines[i+1][0]==1){
+        overlay[i][0]++;
+      }
+      if(mines[i+1][1]==1){
+        overlay[i][0]++;
+      }
+
+      if(mines[i-1][6]==1){
+        overlay[i][7]++;
+      }
+      if(mines[i-1][7]==1){
+        overlay[i][7]++;
+      }
+      if(mines[i][7]==1){
+        overlay[i][7]++;
+      }
+      if(mines[i+1][6]==1){
+        overlay[i][7]++;
+      }
+      if(mines[i+1][7]==1){
+        overlay[i][7]++;
+      }
+
+      if(mines[0][i-1]==1){
+        overlay[0][i]++;
+      }
+      if(mines[1][i-1]==1){
+        overlay[0][i]++;
+      }
+      if(mines[1][i]==1){
+        overlay[0][i]++;
+      }
+      if(mines[0][i+1]==1){
+        overlay[0][i]++;
+      }
+      if(mines[1][i+1]==1){
+        overlay[0][i]++;
+      }
+
+      if(mines[6][i-1]==1){
+        overlay[7][i]++;
+      }
+      if(mines[7][i-1]==1){
+        overlay[7][i]++;
+      }
+      if(mines[7][i]==1){
+        overlay[7][i]++;
+      }
+      if(mines[6][i+1]==1){
+        overlay[7][i]++;
+      }
+      if(mines[7][i+1]==1){
+        overlay[7][i]++;
+      }
+    }
+    if(mines[0][1]==1){
+      overlay[0][0]++;
+    }
+    if(mines[1][1]==1){
+      overlay[0][0]++;
+    }
+    if(mines[1][0]==1){
+      overlay[0][0]++;
+    }
+    if(mines[6][0]==1){
+      overlay[7][0]++;
+    }
+    if(mines[7][1]==1){
+      overlay[7][0]++;
+    }
+    if(mines[7][0]==1){
+      overlay[7][0]++;
+    }
+    if(mines[0][6]==1){
+      overlay[0][7]++;
+    }
+    if(mines[1][6]==1){
+      overlay[0][7]++;
+    }
+    if(mines[1][7]==1){
+      overlay[0][7]++;
+    }
+    if(mines[6][6]==1){
+      overlay[7][7]++;
+    }
+    if(mines[7][6]==1){
+      overlay[7][7]++;
+    }
+    if(mines[6][7]==1){
+      overlay[7][7]++;
+    }
+  //diog
+  for(int i = 0;i<8;i++){
+    for(int j = 0;j<8;j++){
+      cout << overlay[i][j];
+    }
+    cout << endl;
+  }
+  //input
+  int check = 0;
+  while(check==0){
+  string input;
+  cin >> input;
+  if(input=="flag"){
+    cout << "Where?" << endl;
+    string inpu;
+    cin >> inpu;
+    int xx = inpu.at(0) - '0';
+    xx-=48;
+    int yy = inpu.at(1) - '0';
+    flag.push_back(8*(yy-1)+xx-1);
+    cout << xx << " " << yy;
+    flagsize++;
+  }
+  int x = input.at(0) - '0';
+  x-=48;
+  int y = input.at(1) - '0';
+  if(mines[y-1][x-1]==1){
+    check = 1;
+    cout << "You died!";
+    return 0;
+  }
+  else{
+  char aChar = '0' + overlay[y-1][x-1];
+    grid[y-1][x-1] = aChar;
+    
+  }
+  cout << "\x1B[2J\x1B[H";
+  display();
+  int check = 0;
+  for(int i = 0;i<8;i++){
+    for(int j = 0;j<8;j++){
+      if(grid[i][j]!='0' + overlay[i][j]){
+        check = 1;
+      }
+    }
+  }
+  if(check==0){
+    cout << "winner binner chicken sinner";
+    return 0;
+  }
+
+  }
+
+
+}
